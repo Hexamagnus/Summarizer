@@ -5,6 +5,8 @@ from sanic import Sanic
 from sanic.response import json as sanic_json, text as sanic_text
 
 from summarizers.frequency_naive import FrequencySummarizer
+from summarizers.ner import NERExtractor
+from summarizers.syntax_analyzer import SyntaxAnalyzer
 
 app = Sanic(__name__)
 
@@ -40,6 +42,33 @@ def summarize(request):
         'summary': summarized_text,
         'frequency': frequency,
         'topics': topics
+    })
+
+
+@app.route("/ner", methods=['POST'])
+def ner(request):
+    article = request.form.get("article", "")
+    if not article:
+        return sanic_json({'status': 'article param required'}, status=202)
+    summarizer = NERExtractor(article)
+    entities = {x: y for x,y in summarizer.summarize()}
+    return sanic_json({
+        'status': 'OK',
+        'article': article,
+        'entities': entities
+    })
+
+@app.route("/syntax", methods=['POST'])
+def ner(request):
+    article = request.form.get("article", "")
+    if not article:
+        return sanic_json({'status': 'article param required'}, status=202)
+    summarizer = SyntaxAnalyzer(article)
+    tree = summarizer.summarize()
+    return sanic_json({
+        'status': 'OK',
+        'article': article,
+        'tree': tree
     })
 
 # if __name__ == '__main__':

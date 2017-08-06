@@ -30,7 +30,7 @@ class FrequencySummarizer(base.BaseSummarizer):
         return self._frequency_distributions
 
     @frequency_distributions.setter
-    def frequency_distributions(self, frecuency_distributions):
+    def frequency_distributions(self, frequency_distributions):
         return
 
     def summarize(self):
@@ -42,7 +42,7 @@ class FrequencySummarizer(base.BaseSummarizer):
         for i, sentence in enumerate(self.sentences):
             for word in sentence:
                 ranking[i] += self._frequency_distributions.freq(word)
-        ordered_sentences_by_priority = nlargest(int(len(self.sentences)/10), ranking, key=ranking.get)
+        ordered_sentences_by_priority = nlargest(int(len(self.sentences)/10) + 1, ranking, key=ranking.get)
         return [self.sentences[i] for i in ordered_sentences_by_priority]
 
     def __init__(self, text):
