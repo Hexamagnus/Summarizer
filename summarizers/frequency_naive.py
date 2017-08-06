@@ -23,7 +23,7 @@ class FrequencySummarizer(base.BaseSummarizer):
     sentences = list()
 
     _frequency_distributions = None
-    _cleaned_text = ""
+    _cleaned_text = list()
 
     @property
     def frequency_distributions(self):

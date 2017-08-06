@@ -7,6 +7,7 @@ from sanic.response import json as sanic_json, text as sanic_text
 from summarizers.frequency_naive import FrequencySummarizer
 from summarizers.ner import NERExtractor
 from summarizers.syntax_analyzer import SyntaxAnalyzer
+from summarizers.frequency_post_tagger import FrequencyPostTagger
 
 app = Sanic(__name__)
 
@@ -58,6 +59,7 @@ def ner(request):
         'entities': entities
     })
 
+
 @app.route("/syntax", methods=['POST'])
 def ner(request):
     article = request.form.get("article", "")
@@ -71,6 +73,25 @@ def ner(request):
         'tree': tree
     })
 
+
+@app.route("/summarize-posttager", methods=['POST'])
+def summarize_post_tagger(request):
+    article = request.form.get("article", "")
+    if not article:
+        return sanic_json({'status': 'article param required'}, status=202)
+    summarizer = FrequencyPostTagger(article)
+    summarized_text = "\n".join(summarizer.summarize())
+    frequency = summarizer.get_cleaned_frequency()
+    for word, count in frequency.items():
+        frequency[word] = count/frequency.N()
+    topics = frequency.most_common(5)
+    return sanic_json({
+        'status': 'OK',
+        'article': article,
+        'summary': summarized_text,
+        'frequency': frequency,
+        'topics': topics
+    })
 # if __name__ == '__main__':
 app.run(host="0.0.0.0", port=8000, debug=True)
 

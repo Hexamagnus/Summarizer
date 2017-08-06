@@ -71,5 +71,28 @@ class TestSyntaxAnalyzer(unittest.TestCase):
             frequency_summarizer = SyntaxAnalyzer(text)
             print(frequency_summarizer.summarize())
 
+
+class TestFrequencyPostTagger(unittest.TestCase):
+    sample_file_names = [
+        'socrates.txt',
+    ]
+    sample_file_texts = list()
+
+    def setUp(self):
+        for name_of_file in self.sample_file_names:
+            file_to_open = codecs.open(name_of_file)
+            text_of_file = "\n".join(file_to_open.readlines())
+            self.sample_file_texts.append(text_of_file)
+
+    def test_naive_summarization(self):
+        """
+        Just for check everything is working
+        :return: 
+        """
+        from summarizers.frequency_post_tagger import FrequencyPostTagger
+        for text in self.sample_file_texts:
+            frequency_summarizer = FrequencyPostTagger(text)
+            print(frequency_summarizer.summarize())
+
 if __name__ == '__main__':
     unittest.main()
