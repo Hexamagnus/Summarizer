@@ -120,7 +120,9 @@ class FrequencyPostTagger(frequency_naive.FrequencySummarizer):
                 if tag.startswith("S") or \
                     tag.startswith("I") or \
                     tag.startswith("C") or \
-                    tag.startswith("F"):
+                    tag.startswith("F") or \
+                    tag.startswith("D") or \
+                    tag.startswith("P"):
                     pass
                 else:
                     self._cleaned_text.append("{}-{}".format(word, tag))

@@ -26,7 +26,7 @@ We expose for major services:
 - /summarize: Naive frequency summarization
 - /ner: Name Entity Recognition
 - /syntax: Syntax tree
-- /summarize-posttager: A more clever frequency summarization
+- /summarize-posttagger: A more clever frequency summarization
 
 All methods require a x-www-form-urlencoded param called article, and the responses 
 should return an structure similiar to:

@@ -3,6 +3,7 @@ import random
 
 from sanic import Sanic
 from sanic.response import json as sanic_json, text as sanic_text
+from sanic_cors import CORS, cross_origin
 
 from summarizers.frequency_naive import FrequencySummarizer
 from summarizers.ner import NERExtractor
@@ -10,6 +11,7 @@ from summarizers.syntax_analyzer import SyntaxAnalyzer
 from summarizers.frequency_post_tagger import FrequencyPostTagger
 
 app = Sanic(__name__)
+# CORS(app)
 
 
 @app.route("/")
@@ -61,7 +63,7 @@ def ner(request):
 
 
 @app.route("/syntax", methods=['POST'])
-def ner(request):
+def syntax(request):
     article = request.form.get("article", "")
     if not article:
         return sanic_json({'status': 'article param required'}, status=202)
@@ -74,7 +76,7 @@ def ner(request):
     })
 
 
-@app.route("/summarize-posttager", methods=['POST'])
+@app.route("/summarize-posttagger/", methods=['POST', 'OPTIONS'])
 def summarize_post_tagger(request):
     article = request.form.get("article", "")
     if not article:
@@ -92,7 +94,31 @@ def summarize_post_tagger(request):
         'frequency': frequency,
         'topics': topics
     })
-# if __name__ == '__main__':
-app.run(host="0.0.0.0", port=8000, debug=True)
+
+
+@app.route("/mind-map/", methods=['POST', 'OPTIONS'])
+def mindmap(request):
+    article = request.form.get("article", "")
+    if not article:
+        return sanic_json({'status': 'article param required'}, status=202)
+    summarizer = FrequencyPostTagger(article)
+    summarizer.summarize()
+    frequency = summarizer.get_cleaned_frequency()
+    nodes = list()
+    for word, count in frequency.items():
+        frequency[word] = count / frequency.N()
+        nodes.append({
+            "text": word,
+            "note": frequency[word],
+            "nodes": []
+        })
+
+    return sanic_json({
+        "title": "Palabras importantes",
+        "nodes": nodes
+    })
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
 
